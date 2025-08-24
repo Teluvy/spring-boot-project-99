@@ -3,3 +3,7 @@ spring:
     name: app
   profiles:
     active: dev
+app:
+  jwt:
+    secret: "dGhpc19pcy1hLXNhZmUtcmFuZG9tLXNlY3JldC1mb3Itand0LWF1dGg"
+    expiration: 3600000

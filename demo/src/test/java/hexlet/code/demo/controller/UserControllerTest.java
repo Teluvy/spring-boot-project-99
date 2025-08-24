@@ -14,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import hexlet.code.demo.security.JwtTokenProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -36,17 +37,26 @@ public class UserControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
     private User savedUser;
+
+    private String jwtToken;
 
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
         savedUser = userRepository.save(createFakeUser());
+
+        jwtToken = jwtTokenProvider.createToken(savedUser.getId(), savedUser.getEmail());
     }
 
     @Test
     public void testIndex() throws Exception {
-        var result = mockMvc.perform(get("/api/users/" + savedUser.getId()))
+        var result = mockMvc.perform(get("/api/users/" + savedUser.getId())
+                .header("Authorization", "Bearer " + jwtToken)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -58,7 +68,8 @@ public class UserControllerTest {
 
     @Test
     public void testShow() throws Exception {
-        var result = mockMvc.perform(get("/api/users"))
+        var result = mockMvc.perform(get("/api/users").header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -75,7 +86,7 @@ public class UserControllerTest {
                 .supply(Select.field(UserCreateDTO::getPassword), () -> faker.internet().password())
                 .create();
 
-        var result = mockMvc.perform(post("/api/users")
+        var result = mockMvc.perform(post("/api/users").header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newUser)))
                 .andExpect(status().isCreated())
@@ -91,7 +102,7 @@ public class UserControllerTest {
     public void testUpdate() throws Exception {
         savedUser.setFirstName("UpdatedName");
 
-        var result = mockMvc.perform(put("/api/users/" + savedUser.getId())
+        var result = mockMvc.perform(put("/api/users/" + savedUser.getId()).header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(savedUser)))
                 .andExpect(status().isOk())
@@ -106,7 +117,8 @@ public class UserControllerTest {
 
     @Test
     public void testDelete() throws Exception {
-        mockMvc.perform(delete("/api/users/" + savedUser.getId()))
+        mockMvc.perform(delete("/api/users/" + savedUser.getId()).header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
         assertThat(userRepository.findById(savedUser.getId())).isEmpty();

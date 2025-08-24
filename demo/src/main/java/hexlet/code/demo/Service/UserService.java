@@ -7,6 +7,11 @@ import hexlet.code.demo.exception.ResourceNotFoundException;
 import hexlet.code.demo.model.User;
 import hexlet.code.demo.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import hexlet.code.demo.security.UserPrincipal;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
@@ -14,9 +19,11 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder encoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder encoder) {
         this.userRepository = userRepository;
+        this.encoder = encoder;
     }
 
     public UserDTO getById(long id) {
@@ -34,11 +41,13 @@ public class UserService {
 
     public UserDTO create(UserCreateDTO userCreateDTO) {
         User user = toEntity(userCreateDTO);
+        user.setPassword(encoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
         return toDTO(savedUser);
     }
 
     public UserDTO update(UserUpdateDTO userUpdateDTO, long id) {
+        checkAccess(id);
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
 
@@ -51,6 +60,7 @@ public class UserService {
     }
 
     public void delete(long id) {
+        checkAccess(id);
         userRepository.deleteById(id);
     }
 
@@ -70,5 +80,12 @@ public class UserService {
         userDTO.setFirstName(user.getFirstName());
         userDTO.setLastName(user.getLastName());
         return userDTO;
+    }
+
+    private void checkAccess(long id) {
+        Authentication a = SecurityContextHolder.getContext().getAuthentication();
+        if (a == null || !(a.getPrincipal() instanceof UserPrincipal p) || p.id() != id) {
+            throw new AccessDeniedException("Forbidden");
+        }
     }
 }
