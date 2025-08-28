@@ -1,0 +1,15 @@
+{
+  "name": "spring-boot-project-99",
+  "version": "1.0.0",
+  "description": "[![Actions Status](https://github.com/Teluvy/spring-boot-project-99/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Teluvy/spring-boot-project-99/actions)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hexlet/java-task-manager-frontend": "^1.0.25"
+  }
+}

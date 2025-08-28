@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import hexlet.code.demo.model.User;
 import hexlet.code.demo.dto.UserDTO;
@@ -34,8 +35,12 @@ public class UserController {
     }
 
     @GetMapping(path = "")
-    public List<UserDTO> show(){
-        return userService.getAll();
+    public ResponseEntity<List<UserDTO>> show() {
+        List<UserDTO> users = userService.getAll();
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(users.size()))
+                .header("Access-Control-Expose-Headers", "X-Total-Count")
+                .body(users);
     }
 
     @PostMapping(path = "")
