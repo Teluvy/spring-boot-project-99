@@ -1,7 +1,6 @@
 package hexlet.code.demo.component;
 
-import hexlet.code.demo.Service.TaskStatusService;
-import hexlet.code.demo.Service.UserService;
+import hexlet.code.demo.service.UserService;
 import hexlet.code.demo.model.TaskStatus;
 import hexlet.code.demo.repository.TaskStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;

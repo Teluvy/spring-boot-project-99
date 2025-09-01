@@ -1,4 +1,4 @@
-package hexlet.code.demo.Service;
+package hexlet.code.demo.service;
 
 import hexlet.code.demo.dto.UserCreateDTO;
 import hexlet.code.demo.dto.UserDTO;

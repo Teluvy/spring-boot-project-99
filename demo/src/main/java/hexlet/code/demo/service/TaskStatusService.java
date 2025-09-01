@@ -1,15 +1,11 @@
-package hexlet.code.demo.Service;
+package hexlet.code.demo.service;
 
 import hexlet.code.demo.dto.TaskStatusRequestDTO;
 import hexlet.code.demo.dto.TaskStatusResponseDTO;
 import hexlet.code.demo.exception.ResourceNotFoundException;
 import hexlet.code.demo.model.TaskStatus;
 import hexlet.code.demo.repository.TaskStatusRepository;
-import hexlet.code.demo.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 

@@ -16,7 +16,7 @@ import hexlet.code.demo.model.User;
 import hexlet.code.demo.dto.UserDTO;
 import hexlet.code.demo.dto.UserUpdateDTO;
 import hexlet.code.demo.dto.UserCreateDTO;
-import hexlet.code.demo.Service.UserService;
+import hexlet.code.demo.service.UserService;
 
 import java.util.List;
 
