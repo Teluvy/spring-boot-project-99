@@ -28,6 +28,10 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/", "/api/login", "/index.html", "/assets/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/task_statuses/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/task_statuses/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/task_statuses/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/task_statuses/**").authenticated()
                 .anyRequest().authenticated()
         );
 
