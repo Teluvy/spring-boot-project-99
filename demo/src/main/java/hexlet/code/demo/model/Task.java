@@ -24,7 +24,7 @@ public class Task {
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "assignee_id")
+    @JoinColumn(name = "assignee_id", foreignKey = @ForeignKey(name = "fk_task_user", foreignKeyDefinition = "FOREIGN KEY (assignee_id) REFERENCES users(id) ON DELETE CASCADE"))
     private User assigneeId;
 
     private String title;
