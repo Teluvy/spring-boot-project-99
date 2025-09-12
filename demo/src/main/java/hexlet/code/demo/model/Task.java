@@ -7,6 +7,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -17,6 +18,14 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @ManyToMany
+    @JoinTable(
+            name = "task_labels",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "label_id")
+    )
+    private Set<Label> labels;
 
     private Integer index;
 
@@ -31,6 +40,12 @@ public class Task {
     private String content;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "status_id", nullable = false)
+    @JoinColumn(
+            name = "status_id",
+            foreignKey = @ForeignKey(
+                    name = "fk_task_status",
+                    foreignKeyDefinition = "FOREIGN KEY (status_id) REFERENCES task_statuses(id) ON DELETE CASCADE"
+            )
+    )
     private TaskStatus status;
 }

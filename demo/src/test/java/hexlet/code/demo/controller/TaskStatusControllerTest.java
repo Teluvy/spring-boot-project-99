@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.demo.dto.TaskStatusRequestDTO;
 import hexlet.code.demo.model.TaskStatus;
 import hexlet.code.demo.model.User;
+import hexlet.code.demo.repository.LabelRepository;
+import hexlet.code.demo.repository.TaskRepository;
 import hexlet.code.demo.repository.TaskStatusRepository;
 import hexlet.code.demo.repository.UserRepository;
 import hexlet.code.demo.security.JwtTokenProvider;
@@ -43,6 +45,12 @@ public class TaskStatusControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private TaskRepository taskRepository;
+
+    @Autowired
+    private LabelRepository labelRepository;
+
+    @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
     private TaskStatus savedStatus;
@@ -53,12 +61,15 @@ public class TaskStatusControllerTest {
 
     @BeforeEach
     void setUp() {
+        taskRepository.deleteAll();
+        labelRepository.deleteAll();
+        taskStatusRepository.deleteAll();
         userRepository.deleteAll();
+
         savedUser = userRepository.save(createFakeUser());
 
         jwtToken = jwtTokenProvider.createToken(savedUser.getId(), savedUser.getEmail());
 
-        taskStatusRepository.deleteAll();
         savedStatus = taskStatusRepository.save(createFakeStatus());
     }
 

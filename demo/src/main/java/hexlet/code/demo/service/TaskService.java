@@ -3,9 +3,11 @@ package hexlet.code.demo.service;
 import hexlet.code.demo.dto.TaskRequestDTO;
 import hexlet.code.demo.dto.TaskResponseDTO;
 import hexlet.code.demo.exception.ResourceNotFoundException;
+import hexlet.code.demo.model.Label;
 import hexlet.code.demo.model.Task;
 import hexlet.code.demo.model.TaskStatus;
 import hexlet.code.demo.model.User;
+import hexlet.code.demo.repository.LabelRepository;
 import hexlet.code.demo.repository.TaskRepository;
 import hexlet.code.demo.repository.TaskStatusRepository;
 import hexlet.code.demo.repository.UserRepository;
@@ -13,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
@@ -25,6 +30,9 @@ public class TaskService {
 
     @Autowired
     TaskStatusRepository taskStatusRepository;
+
+    @Autowired
+    LabelRepository labelRepository;
 
     public TaskResponseDTO getById(@PathVariable long id){
         Task task = taskRepository.findById(id)
@@ -79,6 +87,12 @@ public class TaskService {
             taskDTO.setStatus(task.getStatus().getSlug());
         }
 
+        taskDTO.setLabels(
+                task.getLabels().stream()
+                        .map(Label::getName)
+                        .toList()
+        );
+
         return taskDTO;
     }
 
@@ -99,6 +113,15 @@ public class TaskService {
                     .orElseThrow(() -> new RuntimeException("Status not found"));
             task.setStatus(status);
         }
+
+        if (taskRequestDTO.getLabelIds() != null) {
+            Set<Label> labels = taskRequestDTO.getLabelIds().stream()
+                    .map(id -> labelRepository.findById(id)
+                            .orElseThrow(() -> new RuntimeException("Label with id " + id + " not found")))
+                    .collect(Collectors.toSet());
+            task.setLabels(labels);
+        }
+
 
         return task;
     }
