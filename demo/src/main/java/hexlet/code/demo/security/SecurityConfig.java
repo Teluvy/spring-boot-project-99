@@ -33,6 +33,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/task_statuses/**").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/api/task_statuses/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/task_statuses/**").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/tasks/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/tasks/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/tasks/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/tasks/**").authenticated()
                 .anyRequest().authenticated()
         );
 
