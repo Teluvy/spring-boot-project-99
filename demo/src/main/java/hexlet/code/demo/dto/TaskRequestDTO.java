@@ -10,11 +10,11 @@ import java.util.List;
 @Setter
 public class TaskRequestDTO {
     private long id;
-    private List<Long> labelIds;
+    private List<Long> taskLabelIds;
     private Integer index;
     private LocalDateTime createdAt;
-    private Long assigneeId;
+    private Long assignee_id;
     private String title;
     private String content;
-    private Long status;
+    private String status;
 }

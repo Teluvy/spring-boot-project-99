@@ -73,7 +73,10 @@ public class TaskControllerTest {
         savedUser = userRepository.save(createFakeUser());
         jwtToken = jwtTokenProvider.createToken(savedUser.getId(), savedUser.getEmail());
 
-        savedStatus = taskStatusRepository.save(new TaskStatus());
+        savedStatus = new TaskStatus();
+        savedStatus.setName("ToReview");
+        savedStatus.setSlug("to-review");
+        savedStatus = taskStatusRepository.save(savedStatus);
 
         savedLabel = new Label();
         savedLabel.setName("bug");
@@ -111,9 +114,9 @@ public class TaskControllerTest {
         request.setIndex(faker.number().numberBetween(1, 10000));
         request.setTitle(faker.lorem().sentence(3));
         request.setContent(faker.lorem().sentence(6));
-        request.setAssigneeId(savedUser.getId());
-        request.setStatus(savedStatus.getId());
-        request.setLabelIds(List.of(savedLabel.getId()));
+        request.setAssignee_id(savedUser.getId());
+        request.setStatus(savedStatus.getSlug());
+        request.setTaskLabelIds(List.of(savedLabel.getId()));
 
         var result = mockMvc.perform(post("/api/tasks")
                         .header("Authorization", "Bearer " + jwtToken)
@@ -135,9 +138,9 @@ public class TaskControllerTest {
         updateDto.setIndex(savedTask.getIndex());
         updateDto.setTitle("Updated title");
         updateDto.setContent("Updated content");
-        updateDto.setAssigneeId(savedUser.getId());
-        updateDto.setStatus(savedStatus.getId());
-        updateDto.setLabelIds(List.of(savedLabel.getId()));
+        updateDto.setAssignee_id(savedUser.getId());
+        updateDto.setStatus(savedStatus.getSlug());
+        updateDto.setTaskLabelIds(List.of(savedLabel.getId()));
 
         var result = mockMvc.perform(put("/api/tasks/" + savedTask.getId())
                         .header("Authorization", "Bearer " + jwtToken)

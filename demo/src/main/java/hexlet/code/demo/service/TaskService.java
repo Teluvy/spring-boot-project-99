@@ -102,20 +102,20 @@ public class TaskService {
         task.setTitle(taskRequestDTO.getTitle());
         task.setContent(taskRequestDTO.getContent());
 
-        if (taskRequestDTO.getAssigneeId() != null) {
-            User assignee = userRepository.findById(taskRequestDTO.getAssigneeId())
+        if (taskRequestDTO.getAssignee_id() != null) {
+            User assignee = userRepository.findById(taskRequestDTO.getAssignee_id())
                     .orElseThrow(() -> new RuntimeException("Assignee not found"));
             task.setAssigneeId(assignee);
         }
 
         if (taskRequestDTO.getStatus() != null) {
-            TaskStatus status = taskStatusRepository.findById(taskRequestDTO.getStatus())
+            TaskStatus status = taskStatusRepository.findBySlug(taskRequestDTO.getStatus())
                     .orElseThrow(() -> new RuntimeException("Status not found"));
             task.setStatus(status);
         }
 
-        if (taskRequestDTO.getLabelIds() != null) {
-            Set<Label> labels = taskRequestDTO.getLabelIds().stream()
+        if (taskRequestDTO.getTaskLabelIds() != null) {
+            Set<Label> labels = taskRequestDTO.getTaskLabelIds().stream()
                     .map(id -> labelRepository.findById(id)
                             .orElseThrow(() -> new RuntimeException("Label with id " + id + " not found")))
                     .collect(Collectors.toSet());

@@ -10,6 +10,7 @@ import hexlet.code.demo.repository.TaskStatusRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -29,14 +30,18 @@ public class DataInitializer implements ApplicationRunner {
     @Value("${app.admin.password}")
     private String adminPassword;
 
+    private final PasswordEncoder encoder;
+
     public DataInitializer(UserService userService,
                            UserRepository userRepository,
                            TaskStatusRepository taskStatusRepository,
-                           LabelRepository labelRepository) {
+                           LabelRepository labelRepository,
+                           PasswordEncoder encoder) {
         this.userService = userService;
         this.userRepository = userRepository;
         this.taskStatusRepository = taskStatusRepository;
         this.labelRepository = labelRepository;
+        this.encoder = encoder;
     }
 
     @Override
@@ -44,7 +49,7 @@ public class DataInitializer implements ApplicationRunner {
         userRepository.findByEmail(adminEmail).orElseGet(() -> {
             User user = new User();
             user.setEmail(adminEmail);
-            user.setPassword(adminPassword);
+            user.setPassword(encoder.encode(adminPassword));
             return userRepository.save(user);
         });
 
