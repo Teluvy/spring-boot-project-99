@@ -1,5 +1,6 @@
 package hexlet.code.demo.service;
 
+import hexlet.code.demo.dto.TaskFilter;
 import hexlet.code.demo.dto.TaskRequestDTO;
 import hexlet.code.demo.dto.TaskResponseDTO;
 import hexlet.code.demo.exception.ResourceNotFoundException;
@@ -11,7 +12,9 @@ import hexlet.code.demo.repository.LabelRepository;
 import hexlet.code.demo.repository.TaskRepository;
 import hexlet.code.demo.repository.TaskStatusRepository;
 import hexlet.code.demo.repository.UserRepository;
+import hexlet.code.demo.specification.TaskSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -40,13 +43,15 @@ public class TaskService {
         return toDTO(task);
     }
 
-    public List<TaskResponseDTO> getAll(){
-        List<TaskResponseDTO> tasks = taskRepository.findAll()
+    public List<TaskResponseDTO> getAll(TaskFilter filter) {
+        Specification<Task> spec = TaskSpecification.build(filter);
+
+        return taskRepository.findAll(spec)
                 .stream()
                 .map(this::toDTO)
                 .toList();
-        return tasks;
     }
+
 
     public TaskResponseDTO create(TaskRequestDTO taskRequestDTO){
         Task task = toEntity(taskRequestDTO);

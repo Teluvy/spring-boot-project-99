@@ -1,5 +1,6 @@
 package hexlet.code.demo.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hexlet.code.demo.dto.TaskRequestDTO;
 import hexlet.code.demo.model.Label;
@@ -163,6 +164,131 @@ public class TaskControllerTest {
                 .andExpect(status().isOk());
 
         assertThat(taskRepository.findById(savedTask.getId())).isEmpty();
+    }
+
+    @Test
+    public void testFilterByTitle() throws Exception {
+        taskRepository.deleteAll();
+
+        Task t1 = new Task();
+        t1.setIndex(1);
+        t1.setAssigneeId(savedUser);
+        t1.setTitle("Create feature");
+        t1.setContent("content1");
+        t1.setStatus(savedStatus);
+        t1.setLabels(Set.of(savedLabel));
+        taskRepository.save(t1);
+
+        Task t2 = new Task();
+        t2.setIndex(2);
+        t2.setAssigneeId(savedUser);
+        t2.setTitle("Another task");
+        t2.setContent("content2");
+        t2.setStatus(savedStatus);
+        taskRepository.save(t2);
+
+        var result = mockMvc.perform(get("/api/tasks")
+                        .param("titleCont", "create")
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isOk())
+                .andExpect(header().exists("X-Total-Count"))
+                .andReturn();
+
+        String body = result.getResponse().getContentAsString();
+        JsonNode arr = objectMapper.readTree(body);
+        assertThat(arr.isArray()).isTrue();
+        assertThat(arr.size()).isEqualTo(1);
+        assertThat(arr.get(0).get("title").asText()).isEqualTo("Create feature");
+    }
+
+    @Test
+    public void testFilterByLabel() throws Exception {
+        taskRepository.deleteAll();
+
+        Label otherLabel = new Label();
+        otherLabel.setName("feature");
+        otherLabel = labelRepository.save(otherLabel);
+
+        Task withLabel = new Task();
+        withLabel.setIndex(1);
+        withLabel.setAssigneeId(savedUser);
+        withLabel.setTitle("Task with bug label");
+        withLabel.setContent("content");
+        withLabel.setStatus(savedStatus);
+        withLabel.setLabels(Set.of(savedLabel));
+        taskRepository.save(withLabel);
+
+        Task withoutLabel = new Task();
+        withoutLabel.setIndex(2);
+        withoutLabel.setAssigneeId(savedUser);
+        withoutLabel.setTitle("Task with other label");
+        withoutLabel.setContent("content");
+        withoutLabel.setStatus(savedStatus);
+        withoutLabel.setLabels(Set.of(otherLabel));
+        taskRepository.save(withoutLabel);
+
+        var result = mockMvc.perform(get("/api/tasks")
+                        .param("labelId", String.valueOf(savedLabel.getId()))
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isOk())
+                .andExpect(header().exists("X-Total-Count"))
+                .andReturn();
+
+        String body = result.getResponse().getContentAsString();
+        JsonNode arr = objectMapper.readTree(body);
+        assertThat(arr.isArray()).isTrue();
+        assertThat(arr.size()).isEqualTo(1);
+        assertThat(arr.get(0).get("title").asText()).isEqualTo("Task with bug label");
+    }
+
+    @Test
+    public void testFilterByAssigneeAndStatus() throws Exception {
+        taskRepository.deleteAll();
+
+        User otherUser = userRepository.save(createFakeUser());
+
+        TaskStatus otherStatus = new TaskStatus();
+        otherStatus.setName("ToBeFixed");
+        otherStatus.setSlug("to_be_fixed");
+        otherStatus = taskStatusRepository.save(otherStatus);
+
+        Task match = new Task();
+        match.setIndex(1);
+        match.setAssigneeId(savedUser);
+        match.setTitle("Match task");
+        match.setContent("content");
+        match.setStatus(savedStatus);
+        taskRepository.save(match);
+
+        Task wrongStatus = new Task();
+        wrongStatus.setIndex(2);
+        wrongStatus.setAssigneeId(savedUser);
+        wrongStatus.setTitle("Wrong status task");
+        wrongStatus.setContent("content");
+        wrongStatus.setStatus(otherStatus);
+        taskRepository.save(wrongStatus);
+
+        Task wrongAssignee = new Task();
+        wrongAssignee.setIndex(3);
+        wrongAssignee.setAssigneeId(otherUser);
+        wrongAssignee.setTitle("Wrong assignee task");
+        wrongAssignee.setContent("content");
+        wrongAssignee.setStatus(savedStatus);
+        taskRepository.save(wrongAssignee);
+
+        var result = mockMvc.perform(get("/api/tasks")
+                        .param("assigneeId", String.valueOf(savedUser.getId()))
+                        .param("status", savedStatus.getSlug())
+                        .header("Authorization", "Bearer " + jwtToken))
+                .andExpect(status().isOk())
+                .andExpect(header().exists("X-Total-Count"))
+                .andReturn();
+
+        String body = result.getResponse().getContentAsString();
+        JsonNode arr = objectMapper.readTree(body);
+        assertThat(arr.isArray()).isTrue();
+        assertThat(arr.size()).isEqualTo(1);
+        assertThat(arr.get(0).get("title").asText()).isEqualTo("Match task");
     }
 
     private Task createFakeTask() {

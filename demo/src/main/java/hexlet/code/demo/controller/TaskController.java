@@ -1,5 +1,6 @@
 package hexlet.code.demo.controller;
 
+import hexlet.code.demo.dto.TaskFilter;
 import hexlet.code.demo.dto.TaskRequestDTO;
 import hexlet.code.demo.dto.TaskResponseDTO;
 import hexlet.code.demo.service.TaskService;
@@ -22,8 +23,19 @@ public class TaskController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<TaskResponseDTO>> index(){
-        List<TaskResponseDTO> taskStatuses = taskService.getAll();
+    public ResponseEntity<List<TaskResponseDTO>> index(
+            @RequestParam(required = false) String titleCont,
+            @RequestParam(required = false) Long assigneeId,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Long labelId
+    ){
+        TaskFilter filter = new TaskFilter();
+        filter.setTitleCont(titleCont);
+        filter.setAssigneeId(assigneeId);
+        filter.setStatus(status);
+        filter.setLabelId(labelId);
+
+        List<TaskResponseDTO> taskStatuses = taskService.getAll(filter);
         return ResponseEntity.ok()
                 .header("X-Total-Count", String.valueOf(taskStatuses.size()))
                 .header("Access-Control-Expose-Headers", "X-Total-Count")
