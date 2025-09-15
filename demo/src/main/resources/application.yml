@@ -5,8 +5,8 @@ spring:
     active: dev
 app:
   jwt:
-    secret: "dGhpc19pcy1hLXNhZmUtcmFuZG9tLXNlY3JldC1mb3Itand0LWF1dGg"
+    secret: ${{ secrets.JWT_SECRET }}
     expiration: 3600000
   admin:
-    email: hexlet@example.com
-    password: qwerty
+    email: ${{ secrets.ADMIN_EMAIL }}
+    password: ${{ secrets.ADMIN_PASSWORD }}
