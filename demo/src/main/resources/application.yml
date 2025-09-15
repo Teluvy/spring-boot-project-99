@@ -5,8 +5,8 @@ spring:
     active: dev
 app:
   jwt:
-    secret: ${{ JWT_SECRET }}
+    secret: ${JWT_SECRET}
     expiration: 3600000
   admin:
-    email: ${{ ADMIN_EMAIL }}
-    password: ${{ ADMIN_PASSWORD }}
+    email: ${ADMIN_EMAIL}
+    password: ${ADMIN_PASSWORD}
