@@ -2,6 +2,14 @@
 FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
 
+ARG JWT_SECRET
+ARG ADMIN_EMAIL
+ARG ADMIN_PASSWORD
+
+ENV JWT_SECRET=${JWT_SECRET}
+ENV ADMIN_EMAIL=${ADMIN_EMAIL}
+ENV ADMIN_PASSWORD=${ADMIN_PASSWORD}
+
 COPY demo/gradlew ./gradlew
 COPY demo/gradle ./gradle
 COPY demo/build.gradle demo/settings.gradle ./
