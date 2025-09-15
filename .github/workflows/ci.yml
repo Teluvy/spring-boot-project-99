@@ -12,6 +12,11 @@ jobs:
     name: Build, Test & Analyze
     runs-on: ubuntu-latest
 
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+      ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
