@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build & Test (Gradle)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Make gradlew executable
+        run: chmod +x demo/gradlew
+
+      - name: Build and test with Gradle
+        working-directory: demo
+        run: ./gradlew clean build --no-daemon
+
+      - name: Upload jar artifact (optional)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-jar
+          path: demo/build/libs/*.jar
