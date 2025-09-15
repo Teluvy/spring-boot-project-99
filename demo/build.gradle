@@ -3,6 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '3.5.4'
 	id 'io.spring.dependency-management' version '1.1.7'
     id "org.sonarqube" version "6.3.1.5724"
+    id 'jacoco'
 }
 
 group = 'hexlet.code'
@@ -40,13 +41,29 @@ dependencies {
 	runtimeOnly  'io.jsonwebtoken:jjwt-jackson:0.11.5'
 }
 
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        xml.destination = file("$buildDir/reports/jacoco/test/jacocoTestReport.xml")
+        html.required = true
+    }
+}
+
 sonar {
     properties {
         property "sonar.projectKey", "Teluvy_spring-boot-project-99"
         property "sonar.organization", "teluvy"
+        property "sonar.java.coveragePlugin", "jacoco"
+        property "sonar.coverage.jacoco.xmlReportPaths", "$buildDir/reports/jacoco/test/jacocoTestReport.xml"
     }
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }

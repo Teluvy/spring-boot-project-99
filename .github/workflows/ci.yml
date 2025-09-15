@@ -46,7 +46,7 @@ jobs:
         working-directory: demo
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew clean build sonar --no-daemon --info
+        run: ./gradlew clean test jacocoTestReport sonarqube --no-daemon --info
 
       - name: Upload jar artifact (optional)
         if: success()
