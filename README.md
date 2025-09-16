@@ -11,6 +11,6 @@
 ## Ссылка на приложение
 [Посмотреть приложение](https://spring-boot-project-99-zmml.onrender.com)
 
-Для гостевого входа используйте
-email: example@example.com
+Для гостевого входа используйте  
+email: example@example.com  
 password: example
