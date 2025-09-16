@@ -1,6 +1,7 @@
 package hexlet.code.demo.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.demo.dto.UserDTO;
 import hexlet.code.demo.model.User;
 import hexlet.code.demo.dto.UserCreateDTO;
 import hexlet.code.demo.repository.UserRepository;
@@ -15,6 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import hexlet.code.demo.security.JwtTokenProvider;
+
+import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -122,6 +125,38 @@ public class UserControllerTest {
                 .andExpect(status().isOk());
 
         assertThat(userRepository.findById(savedUser.getId())).isEmpty();
+    }
+
+    @Test
+    void testToEntityWithGeneratedData() throws Exception {
+        UserCreateDTO dto = Instancio.of(UserCreateDTO.class).create();
+
+        UserController controller = new UserController();
+        Method method = UserController.class.getDeclaredMethod("toEntity", UserCreateDTO.class);
+        method.setAccessible(true);
+
+        User user = (User) method.invoke(controller, dto);
+
+        assertThat(user.getEmail()).isEqualTo(dto.getEmail());
+        assertThat(user.getFirstName()).isEqualTo(dto.getFirstName());
+        assertThat(user.getLastName()).isEqualTo(dto.getLastName());
+        assertThat(user.getPassword()).isEqualTo(dto.getPassword());
+    }
+
+    @Test
+    void testToDTOWithGeneratedData() throws Exception {
+        User user = Instancio.of(User.class).supply(Select.field(User::getId), () -> 42L).create();
+
+        UserController controller = new UserController();
+        Method method = UserController.class.getDeclaredMethod("toDTO", User.class);
+        method.setAccessible(true);
+
+        UserDTO dto = (UserDTO) method.invoke(controller, user);
+
+        assertThat(dto.getId()).isEqualTo(user.getId());
+        assertThat(dto.getEmail()).isEqualTo(user.getEmail());
+        assertThat(dto.getFirstName()).isEqualTo(user.getFirstName());
+        assertThat(dto.getLastName()).isEqualTo(user.getLastName());
     }
 
     public User createFakeUser() {
