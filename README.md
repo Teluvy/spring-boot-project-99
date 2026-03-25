@@ -1,5 +1,4 @@
-### Hexlet tests and linter status:
-[![Actions Status](https://github.com/Teluvy/spring-boot-project-99/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/Teluvy/spring-boot-project-99/actions)
+### Проект: Менеджер задач
 
 ### SonarQube statuses
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Teluvy_spring-boot-project-99&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Teluvy_spring-boot-project-99) 
